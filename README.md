@@ -125,3 +125,7 @@ The  inference_pkg_launch.py is also included in this package that gives an exam
 | ---------- | ------------ | ----------- |
 |load_model|LoadModelSrv|Service that is responsible for setting pre-processing algorithm and inference task for the specific type of model loaded.|
 |inference_state|InferenceStateSrv|Service that is responsible for starting and stopping inference tasks.|
+
+## Resources
+
+* AWS DeepRacer Opensource getting started: [https://github.com/awsdeepracer/aws-deepracer-launcher/blob/main/getting-started.md](https://github.com/awsdeepracer/aws-deepracer-launcher/blob/main/getting-started.md)
