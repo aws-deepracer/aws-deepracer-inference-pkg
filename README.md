@@ -109,11 +109,11 @@ The `inference_pkg_launch.py`, included in this package, provides an example dem
             )
         ])
 
-## Node Details
+## Node details
 
 ### `inference_node`
 
-#### Subscribed Topics
+#### Subscribed topics
 
 | Topic name | Message type | Description |
 | ---------- | ------------ | ----------- |
