@@ -201,7 +201,8 @@ namespace IntelInferenceEngine {
     }
 
     bool RLInferenceModel::loadModel(const char* artifactPath,
-                            std::shared_ptr<InferTask::ImgProcessBase> imgProcess) {
+                            std::shared_ptr<InferTask::ImgProcessBase> imgProcess,
+                            std::string device) {
         if (doInference_) {
             RCLCPP_ERROR(inferenceNode->get_logger(), "Please stop inference prior to loading a model");
             return false;
@@ -214,7 +215,7 @@ namespace IntelInferenceEngine {
         imgProcess_ = imgProcess;
         // Load the model
         try {
-            inferRequest_ = setMultiHeadModel(artifactPath, "CPU", core_, inputNamesArr_,
+            inferRequest_ = setMultiHeadModel(artifactPath, device, core_, inputNamesArr_,
                                      outputName_, InferenceEngine::Precision::FP32,
                                      InferenceEngine::Precision::FP32, inferenceNode);
             for(size_t i = 0; i != inputNamesArr_.size(); ++i) {

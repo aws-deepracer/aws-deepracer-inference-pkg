@@ -32,8 +32,10 @@ namespace InferTask {
         /// @returns True if model loaded successfully, false otherwise
         /// @param artifactPath Path to the model artifact.
         /// @param imgProcess Pointer to the image processing algorithm
+        /// @param device Reference to the compute device (CPU, GPU, MYRIAD)
         virtual bool loadModel(const char* artifactPath,
-                               std::shared_ptr<ImgProcessBase> imgProcess) = 0;
+                               std::shared_ptr<ImgProcessBase> imgProcess,
+                               std::string device) = 0;
         /// Starts the inference task until stopped.
         virtual void startInference() = 0;
         /// Stops the inference task if running.
