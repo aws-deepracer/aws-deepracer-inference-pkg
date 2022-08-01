@@ -41,11 +41,18 @@ namespace InferTask {
     /// Class that will manage the inference task. In particular it will start and stop the
     /// inference tasks and feed the inference task the sensor data.
     /// @param nodeName Reference to the string containing name of the node.
+    /// @param device Reference to the compute device (CPU, GPU, MYRIAD)
     public:
         InferenceNodeMgr(const std::string & nodeName)
-          : Node(nodeName)
+          : Node(nodeName),
+          deviceName_("CPU")
         {
             RCLCPP_INFO(this->get_logger(), "%s started", nodeName.c_str());
+
+            this->declare_parameter<std::string>("device", deviceName_);
+            // Device name; OpenVINO supports CPU, GPU and MYRIAD
+            deviceName_ = this->get_parameter("device").as_string();
+
             loadModelServiceCbGrp_ = this->create_callback_group(rclcpp::callback_group::CallbackGroupType::MutuallyExclusive);
             loadModelService_ = this->create_service<deepracer_interfaces_pkg::srv::LoadModelSrv>("load_model",
                                                                                                   std::bind(&InferTask::InferenceNodeMgr::LoadModelHdl,
@@ -129,7 +136,7 @@ namespace InferTask {
                         RCLCPP_ERROR(this->get_logger(), "Unknown inference task");
                         return;
                 }
-                itInferTask->second->loadModel(req->artifact_path.c_str(), itPreProcess->second);
+                itInferTask->second->loadModel(req->artifact_path.c_str(), itPreProcess->second, deviceName_);
                 res->error = 0;
             }
         }
@@ -149,6 +156,9 @@ namespace InferTask {
         /// List of available pre-processing algorithms.
         std::unordered_map<int, std::shared_ptr<ImgProcessBase>> preProcessList_;
         /// Reference to the node handler.
+
+        /// Compute device type.
+        std::string deviceName_;     
     };
 }
 
