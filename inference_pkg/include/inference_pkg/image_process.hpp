@@ -19,6 +19,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
+#include "sensor_msgs/msg/compressed_image.hpp"
 #include "cv_bridge/cv_bridge.h"
 #include <unordered_map>
 
@@ -33,9 +34,9 @@ namespace InferTask {
         /// @param frameData ROS message containing the image data.
         /// @param retImg Open CV Mat object that will be used to store the post processed image
         /// @param params Hash map containing relevant pre-processing parameters
-        virtual void processImage(const sensor_msgs::msg::Image &frameData, cv::Mat& retImg,
+        virtual void processImage(const sensor_msgs::msg::CompressedImage &frameData, cv::Mat& retImg,
                                   const std::unordered_map<std::string, int> &params) = 0;
-        virtual void processImageVec(const std::vector<sensor_msgs::msg::Image> &frameDataArr, cv::Mat& retImg,
+        virtual void processImageVec(const std::vector<sensor_msgs::msg::CompressedImage> &frameDataArr, cv::Mat& retImg,
                                      const std::unordered_map<std::string, int> &params) = 0;
         /// Resets the image processing algorithms data if any.
         virtual void reset() = 0;
@@ -49,9 +50,9 @@ namespace InferTask {
     public:
         RGB() = default;
         virtual ~RGB() = default;
-        virtual void processImage(const sensor_msgs::msg::Image &frameData, cv::Mat& retImg,
+        virtual void processImage(const sensor_msgs::msg::CompressedImage &frameData, cv::Mat& retImg,
                                   const std::unordered_map<std::string, int> &params) override;
-        virtual void processImageVec(const std::vector<sensor_msgs::msg::Image> &frameDataArr, cv::Mat& retImg,
+        virtual void processImageVec(const std::vector<sensor_msgs::msg::CompressedImage> &frameDataArr, cv::Mat& retImg,
                                      const std::unordered_map<std::string, int> &params) override {(void)frameDataArr;(void)retImg;(void)params;}
         virtual void reset() override {}
         virtual const std::string getEncode() const;
@@ -67,9 +68,9 @@ namespace InferTask {
         /// @param isMask True if background masking should be performed on the image.
         Grey(bool isThreshold, bool isMask);
         virtual ~Grey() = default;
-        virtual void processImage(const sensor_msgs::msg::Image &frameData, cv::Mat& retImg,
+        virtual void processImage(const sensor_msgs::msg::CompressedImage &frameData, cv::Mat& retImg,
                                   const std::unordered_map<std::string, int> &params) override;
-        virtual void processImageVec(const std::vector<sensor_msgs::msg::Image> &frameDataArr, cv::Mat& retImg,
+        virtual void processImageVec(const std::vector<sensor_msgs::msg::CompressedImage> &frameDataArr, cv::Mat& retImg,
                                      const std::unordered_map<std::string, int> &params);
         virtual void reset() override;
         virtual const std::string getEncode() const;
@@ -91,9 +92,9 @@ namespace InferTask {
     public:
         GreyDiff() = default;
         virtual ~GreyDiff() = default;
-        virtual void processImage(const sensor_msgs::msg::Image &frameData, cv::Mat& retImg,
+        virtual void processImage(const sensor_msgs::msg::CompressedImage &frameData, cv::Mat& retImg,
                                   const std::unordered_map<std::string, int> &params) override;
-        virtual void processImageVec(const std::vector<sensor_msgs::msg::Image> &frameDataArr, cv::Mat& retImg,
+        virtual void processImageVec(const std::vector<sensor_msgs::msg::CompressedImage> &frameDataArr, cv::Mat& retImg,
                                      const std::unordered_map<std::string, int> &params) override {(void)frameDataArr;(void)retImg;(void)params;}
         virtual void reset() override;
         virtual const std::string getEncode() const;

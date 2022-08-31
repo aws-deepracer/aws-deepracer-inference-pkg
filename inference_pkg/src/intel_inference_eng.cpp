@@ -103,7 +103,7 @@ namespace {
      template<typename T, typename V> void load1DImg(V *inputPtr,
                                                      cv::Mat &retImg,
                                                      std::shared_ptr<InferTask::ImgProcessBase> imgProcessPtr,
-                                                     const sensor_msgs::msg::Image &imgData,
+                                                     const sensor_msgs::msg::CompressedImage &imgData,
                                                      const std::unordered_map<std::string, int> &params) {
         imgProcessPtr->processImage(imgData, retImg, params);
         if (retImg.empty()) {
@@ -127,7 +127,7 @@ namespace {
      template<typename T, typename V> void loadStackImg(V *inputPtr,
                                                         cv::Mat &retImg, 
                                                         std::shared_ptr<InferTask::ImgProcessBase> imgProcessPtr,
-                                                        const sensor_msgs::msg::Image &imgData,
+                                                        const sensor_msgs::msg::CompressedImage &imgData,
                                                         const std::unordered_map<std::string, int> &params) {
         imgProcessPtr->processImage(imgData, retImg, params);
         if (retImg.empty()) {
@@ -150,7 +150,7 @@ namespace {
      template<typename T, typename V> void loadStereoImg(V *inputPtr,
                                                         cv::Mat &retImg, 
                                                         std::shared_ptr<InferTask::ImgProcessBase> imgProcessPtr,
-                                                        const std::vector<sensor_msgs::msg::Image> &imgDataArr,
+                                                        const std::vector<sensor_msgs::msg::CompressedImage> &imgDataArr,
                                                         const std::unordered_map<std::string, int> &params) {
 
         imgProcessPtr->processImageVec(imgDataArr, retImg, params);
