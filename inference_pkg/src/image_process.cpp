@@ -29,7 +29,7 @@ namespace {
     /// @param frameData ROS image message containing the image data.
     /// @param retImg Reference to CV object to be populated the with resized image.
     /// @param params Hash map containing resize information.
-    bool cvtToCVObjResize (const sensor_msgs::msg::Image &frameData, cv::Mat &retImg,
+    bool cvtToCVObjResize (const sensor_msgs::msg::CompressedImage &frameData, cv::Mat &retImg,
                            const std::unordered_map<std::string, int> &params) {
 
         cv_bridge::CvImagePtr cvPtr;
@@ -121,7 +121,7 @@ namespace {
 }
 
 namespace InferTask {
-    void RGB::processImage(const sensor_msgs::msg::Image &frameData, cv::Mat &retImg,
+    void RGB::processImage(const sensor_msgs::msg::CompressedImage &frameData, cv::Mat &retImg,
                            const std::unordered_map<std::string, int> &params) {
         cvtToCVObjResize(frameData, retImg, params);
     }
@@ -137,7 +137,7 @@ namespace InferTask {
 
     }
 
-    void Grey::processImage(const sensor_msgs::msg::Image &frameData, cv::Mat &retImg,
+    void Grey::processImage(const sensor_msgs::msg::CompressedImage &frameData, cv::Mat &retImg,
                             const std::unordered_map<std::string, int> &params) {
         cv::Mat currImg;
         if (cvtToCVObjResize(frameData, currImg, params)) {
@@ -160,7 +160,7 @@ namespace InferTask {
         }
     }
 
-    void Grey::processImageVec(const std::vector<sensor_msgs::msg::Image> &frameDataArr, cv::Mat &retImg,
+    void Grey::processImageVec(const std::vector<sensor_msgs::msg::CompressedImage> &frameDataArr, cv::Mat &retImg,
                             const std::unordered_map<std::string, int> &params) {
         // Left camera image is sent as the top image and the right camera image is sent as second in the vector.
         // Stack operation replaces the beginning values as we loop through and hence we loop in decreasing order
@@ -188,7 +188,7 @@ namespace InferTask {
         return sensor_msgs::image_encodings::MONO8;
     }
 
-    void GreyDiff::processImage(const sensor_msgs::msg::Image &frameData, cv::Mat &retImg,
+    void GreyDiff::processImage(const sensor_msgs::msg::CompressedImage &frameData, cv::Mat &retImg,
                             const std::unordered_map<std::string, int> &params) {
         (void)retImg;                    
         cv::Mat currImg;

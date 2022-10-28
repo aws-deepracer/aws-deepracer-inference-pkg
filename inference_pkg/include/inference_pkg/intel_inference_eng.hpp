@@ -34,7 +34,8 @@ namespace IntelInferenceEngine {
         RLInferenceModel(std::shared_ptr<rclcpp::Node> inferenceNodePtr, const std::string &sensorSubName);
         virtual ~RLInferenceModel();
         virtual bool loadModel(const char* artifactPath,
-                               std::shared_ptr<InferTask::ImgProcessBase> imgProcess) override;
+                               std::shared_ptr<InferTask::ImgProcessBase> imgProcess,
+                               std::string device) override;
         virtual void startInference() override;
         virtual void stopInference() override;
         /// Callback method to retrieve sensor data.

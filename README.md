@@ -134,6 +134,14 @@ The `inference_pkg_launch.py`, included in this package, provides an example dem
 |`load_model`|`LoadModelSrv`|Service that is responsible for setting pre-processing algorithm and inference tasks for the specific type of model loaded.|
 |`inference_state`|`InferenceStateSrv`|Service that is responsible for starting and stopping inference tasks.|
 
+
+### Parameters
+
+| Parameter name   | Description  |
+| ---------------- |  ----------- |
+| `device` | String that is either `CPU`, `GPU` or `MYRIAD`. Default is `CPU`. `MYRIAD` is the Intel Compute Stick 2. |
+
+
 ## Resources
 
 * [Getting started with AWS DeepRacer OpenSource](https://github.com/aws-deepracer/aws-deepracer-launcher/blob/main/getting-started.md)
