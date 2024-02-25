@@ -11,9 +11,13 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+set(TENSORFLOW_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../deps/tensorflow)
+
+add_subdirectory(
+  "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite"
+  "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite"
+  EXCLUDE_FROM_ALL
+)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -23,8 +27,6 @@ find_package(image_transport REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(ngraph REQUIRED)
-find_package(InferenceEngine REQUIRED)
 find_package(OpenCV 4.2 QUIET
   COMPONENTS
     opencv_core
@@ -44,22 +46,22 @@ endif()
 
 add_executable(inference_node
     src/inference_node.cpp
-    src/intel_inference_eng.cpp
+    src/tflite_inference_eng.cpp
     src/image_process.cpp
 )
 
 target_include_directories(inference_node PRIVATE
     include
     ${OpenCV_INCLUDE_DIRS}
-    ${InferenceEngine_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers/include
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 target_link_libraries(inference_node  -lm -ldl
   ${OpenCV_LIBRARIES}
-  ${InferenceEngine_LIBRARIES}
-  ${NGRAPH_LIBRARIES})
+  tensorflow-lite)
 
-ament_target_dependencies(inference_node rclcpp deepracer_interfaces_pkg sensor_msgs std_msgs cv_bridge image_transport OpenCV InferenceEngine ngraph) 
+ament_target_dependencies(inference_node rclcpp deepracer_interfaces_pkg sensor_msgs std_msgs cv_bridge image_transport OpenCV) 
 
 install(TARGETS
   inference_node

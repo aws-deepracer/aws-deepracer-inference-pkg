@@ -14,7 +14,7 @@
 //   limitations under the License.                                              //
 ///////////////////////////////////////////////////////////////////////////////////
 
-#include "inference_pkg/intel_inference_eng.hpp"
+#include "inference_pkg/tflite_inference_eng.hpp"
 #include "deepracer_interfaces_pkg/srv/inference_state_srv.hpp"
 #include "deepracer_interfaces_pkg/srv/load_model_srv.hpp"
 
@@ -126,7 +126,7 @@ namespace InferTask {
             if (itInferTask != taskList_.end() && itPreProcess != preProcessList_.end()) {
                 switch(req->task_type) {
                     case rlTask:
-                        itInferTask->second.reset(new IntelInferenceEngine::RLInferenceModel(this->shared_from_this(), "/sensor_fusion_pkg/sensor_msg"));
+                        itInferTask->second.reset(new TFLiteInferenceEngine::RLInferenceModel(this->shared_from_this(), "/sensor_fusion_pkg/sensor_msg"));
                         break;
                     case objDetectTask:
                         //! TODO add onject detection when class is implemented.
