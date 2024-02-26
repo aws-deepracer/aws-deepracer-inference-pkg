@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(inference_pkg)
+include(FetchContent)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -11,11 +12,14 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
 
-set(TENSORFLOW_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../deps/tensorflow)
+FetchContent_Declare(tensorflow-lite
+  GIT_REPOSITORY https://github.com/tensorflow/tensorflow.git
+)
+FetchContent_Populate(tensorflow-lite)
 
 add_subdirectory(
-  "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite"
-  "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite"
+  ${tensorflow-lite_SOURCE_DIR}/tensorflow/lite 
+  ${tensorflow-lite_BINARY_DIR}
   EXCLUDE_FROM_ALL
 )
 
