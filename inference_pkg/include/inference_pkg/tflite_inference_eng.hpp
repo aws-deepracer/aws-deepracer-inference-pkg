@@ -65,11 +65,7 @@ namespace TFLiteInferenceEngine {
         std::vector<std::string> inputNamesArr_;
         /// Name of the output layer
         std::string outputName_;      
-        std::vector<std::vector<int>> inputDimsArr_;
         std::vector<std::vector<int>> outputDimsArr_;
-        std::vector<size_t> inputSizesArr_;
-        std::vector<size_t> outputSizes_;
-        std::vector<TfLiteTensor const *> input_tensors_;
         std::vector<TfLiteTensor const *> output_tensors_;
 
     };

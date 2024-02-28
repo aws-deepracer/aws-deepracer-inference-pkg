@@ -164,8 +164,23 @@ namespace TFLiteInferenceEngine {
             RCLCPP_ERROR(inferenceNode->get_logger(), "Invalid image processing algorithm");
             return false;
         }
+
+        // Validate the artifact path.
+        auto strIdx = ((std::string) artifactPath).rfind('.');
+        if (strIdx == std::string::npos) {
+            throw InferenceExcept("Artifact missing file extension");
+        }
+        if (((std::string) artifactPath).substr(strIdx+1) != "tflite") {
+            throw InferenceExcept("No tflite extension found");
+        }
+                
         // Set the image processing algorithms
         imgProcess_ = imgProcess;
+
+        // Clean up vectors
+        inputNamesArr_.clear();
+        outputDimsArr_.clear();
+        output_tensors_.clear();
 
         // Load the model
         try {
@@ -181,7 +196,6 @@ namespace TFLiteInferenceEngine {
             for (auto i : interpreter_->inputs())
             {
                 auto const *input_tensor = interpreter_->tensor(i);
-                input_tensors_.push_back(input_tensor);
 
                 auto dims = std::vector<int>{}; 
                 std::copy(
@@ -189,8 +203,6 @@ namespace TFLiteInferenceEngine {
                     std::back_inserter(dims));
 
                 inputNamesArr_.push_back(interpreter_->GetInputName(i));
-                inputDimsArr_.push_back(dims);
-                inputSizesArr_.push_back(input_tensor->bytes);
 
                 std::unordered_map<std::string, int> params_ = {{"width", input_tensor->dims->data[2]},
                        {"height", input_tensor->dims->data[1]},
@@ -214,7 +226,6 @@ namespace TFLiteInferenceEngine {
                 RCLCPP_INFO(inferenceNode->get_logger(), "Output name: %s", interpreter_->GetOutputName(o));
 
                 outputDimsArr_.push_back(dims);
-                outputSizes_.push_back(output_tensor->bytes);
             }
 
         }
