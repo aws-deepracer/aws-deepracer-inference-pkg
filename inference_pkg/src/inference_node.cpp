@@ -14,6 +14,7 @@
 //   limitations under the License.                                              //
 ///////////////////////////////////////////////////////////////////////////////////
 
+#include "inference_pkg/intel_inference_eng.hpp"
 #include "inference_pkg/tflite_inference_eng.hpp"
 #include "deepracer_interfaces_pkg/srv/inference_state_srv.hpp"
 #include "deepracer_interfaces_pkg/srv/load_model_srv.hpp"
@@ -45,13 +46,18 @@ namespace InferTask {
     public:
         InferenceNodeMgr(const std::string & nodeName)
           : Node(nodeName),
-          deviceName_("CPU")
+          deviceName_("CPU"),
+          inferenceEngine_("TFLITE")
         {
             RCLCPP_INFO(this->get_logger(), "%s started", nodeName.c_str());
 
             this->declare_parameter<std::string>("device", deviceName_);
             // Device name; OpenVINO supports CPU, GPU and MYRIAD
             deviceName_ = this->get_parameter("device").as_string();
+
+            this->declare_parameter<std::string>("inference_engine", inferenceEngine_);
+            // Inference Engine name; TFLITE or OPENVINO
+            inferenceEngine_ = this->get_parameter("inference_engine").as_string();
 
             loadModelServiceCbGrp_ = this->create_callback_group(rclcpp::callback_group::CallbackGroupType::MutuallyExclusive);
             loadModelService_ = this->create_service<deepracer_interfaces_pkg::srv::LoadModelSrv>("load_model",
@@ -126,7 +132,12 @@ namespace InferTask {
             if (itInferTask != taskList_.end() && itPreProcess != preProcessList_.end()) {
                 switch(req->task_type) {
                     case rlTask:
-                        itInferTask->second.reset(new TFLiteInferenceEngine::RLInferenceModel(this->shared_from_this(), "/sensor_fusion_pkg/sensor_msg"));
+                        if (inferenceEngine_.compare("TFLITE") == 0) {
+                            itInferTask->second.reset(new TFLiteInferenceEngine::RLInferenceModel(this->shared_from_this(), "/sensor_fusion_pkg/sensor_msg"));
+                        } else {
+                            itInferTask->second.reset(new IntelInferenceEngine::RLInferenceModel(this->shared_from_this(), "/sensor_fusion_pkg/sensor_msg"));
+                        }
+                        
                         break;
                     case objDetectTask:
                         //! TODO add onject detection when class is implemented.
@@ -158,7 +169,9 @@ namespace InferTask {
         /// Reference to the node handler.
 
         /// Compute device type.
-        std::string deviceName_;     
+        std::string deviceName_;
+        /// Inference Engine parameter.
+        std::string inferenceEngine_;
     };
 }
 

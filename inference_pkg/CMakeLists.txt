@@ -31,6 +31,8 @@ find_package(image_transport REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(ngraph REQUIRED)
+find_package(InferenceEngine REQUIRED)
 find_package(OpenCV 4.2 QUIET
   COMPONENTS
     opencv_core
@@ -51,21 +53,26 @@ endif()
 add_executable(inference_node
     src/inference_node.cpp
     src/tflite_inference_eng.cpp
+    src/intel_inference_eng.cpp
     src/image_process.cpp
 )
 
 target_include_directories(inference_node PRIVATE
     include
     ${OpenCV_INCLUDE_DIRS}
+    ${InferenceEngine_INCLUDE_DIRS}
     ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers/include
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 target_link_libraries(inference_node  -lm -ldl
   ${OpenCV_LIBRARIES}
-  tensorflow-lite)
+  tensorflow-lite
+  ${InferenceEngine_LIBRARIES}
+  ${NGRAPH_LIBRARIES}  
+)
 
-ament_target_dependencies(inference_node rclcpp deepracer_interfaces_pkg sensor_msgs std_msgs cv_bridge image_transport OpenCV) 
+ament_target_dependencies(inference_node rclcpp deepracer_interfaces_pkg sensor_msgs std_msgs cv_bridge image_transport OpenCV InferenceEngine ngraph) 
 
 install(TARGETS
   inference_node
