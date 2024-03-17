@@ -281,11 +281,7 @@ namespace TFLiteInferenceEngine {
 
             // Last dimension of output is number of classes
             auto nClasses = outputDimsArr_[0].back();
-
             auto * outputData = output_tensors_[0]->data.f;
-            for (auto i = 0; i < nClasses; ++i) {
-                std::cout << std::to_string(i) << ": " << outputData[i] << std::endl;
-            }
 
             auto inferMsg = deepracer_interfaces_pkg::msg::InferResultsArray();
             for (size_t i = 0; i < msg->images.size(); ++i) {
