@@ -14,16 +14,18 @@
 //   limitations under the License.                                              //
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef INTEL_INFERENCE_ENG_HPP
-#define INTEL_INFERENCE_ENG_HPP
+#ifndef TFLITE_INFERENCE_ENG_HPP
+#define TFLITE_INFERENCE_ENG_HPP
 
 #include "inference_pkg/inference_base.hpp"
-#include "inference_engine.hpp"
+#include "tensorflow/lite/interpreter.h"
+#include "tensorflow/lite/kernels/register.h"
+#include "tensorflow/lite/model.h"
 #include "deepracer_interfaces_pkg/msg/evo_sensor_msg.hpp"
 #include "deepracer_interfaces_pkg/msg/infer_results_array.hpp"
 #include <atomic>
 
-namespace IntelInferenceEngine {
+namespace TFLiteInferenceEngine {
     class RLInferenceModel : public InferTask::InferenceBase
     {
     /// Concrete inference task class for running reinforcement learning models
@@ -54,15 +56,18 @@ namespace IntelInferenceEngine {
         /// Inference state variable.
         std::atomic<bool> doInference_;
         /// Neural network Inference engine core object.
-        InferenceEngine::Core core_;
+        std::unique_ptr<tflite::FlatBufferModel> model_;
         /// Inference request object
-        InferenceEngine::InferRequest inferRequest_;
+        std::unique_ptr<tflite::Interpreter> interpreter_;
         /// Vector of hash map that stores all relevant pre-processing parameters for each input head.
         std::vector<std::unordered_map<std::string, int>> paramsArr_;
         /// Vector of names of the input heads
         std::vector<std::string> inputNamesArr_;
         /// Name of the output layer
-        std::string outputName_;
+        std::string outputName_;      
+        std::vector<std::vector<int>> outputDimsArr_;
+        std::vector<TfLiteTensor const *> output_tensors_;
+
     };
 }
 #endif
