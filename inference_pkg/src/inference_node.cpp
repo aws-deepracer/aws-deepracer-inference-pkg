@@ -16,6 +16,7 @@
 
 #include "inference_pkg/intel_inference_eng.hpp"
 #include "inference_pkg/tflite_inference_eng.hpp"
+#include "std_msgs/msg/string.hpp"
 #include "deepracer_interfaces_pkg/srv/inference_state_srv.hpp"
 #include "deepracer_interfaces_pkg/srv/load_model_srv.hpp"
 
@@ -44,6 +45,8 @@ namespace InferTask {
     /// @param nodeName Reference to the string containing name of the node.
     /// @param device Reference to the compute device (CPU, GPU, MYRIAD)
     public:
+        const char* MODEL_ARTIFACT_TOPIC = "model_artifact";
+
         InferenceNodeMgr(const std::string & nodeName)
           : Node(nodeName),
           deviceName_("CPU"),
@@ -78,6 +81,9 @@ namespace InferTask {
                                                                                                                std::placeholders::_3),
                                                                                                                ::rmw_qos_profile_default,
                                                                                                                setInferenceStateServiceCbGrp_);
+
+            // Create a publisher to publish the images to run inference.
+            modelArtifactPub_ = this->create_publisher<std_msgs::msg::String>(MODEL_ARTIFACT_TOPIC, 1);
 
             // Add all available task and algorithms to these hash maps.
             taskList_ = { {rlTask, nullptr} };
@@ -147,7 +153,14 @@ namespace InferTask {
                         RCLCPP_ERROR(this->get_logger(), "Unknown inference task");
                         return;
                 }
+
                 itInferTask->second->loadModel(req->artifact_path.c_str(), itPreProcess->second, deviceName_);
+
+                // Send a message to say we have loaded a model
+                std_msgs::msg::String modelArtifactMsg;
+                modelArtifactMsg.data = req->artifact_path;
+                modelArtifactPub_->publish(modelArtifactMsg);
+
                 res->error = 0;
             }
         }
@@ -167,6 +180,9 @@ namespace InferTask {
         /// List of available pre-processing algorithms.
         std::unordered_map<int, std::shared_ptr<ImgProcessBase>> preProcessList_;
         /// Reference to the node handler.
+
+        /// ROS publisher object to publish the name of a new model.
+        rclcpp::Publisher<std_msgs::msg::String>::SharedPtr modelArtifactPub_;
 
         /// Compute device type.
         std::string deviceName_;
